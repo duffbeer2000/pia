@@ -1,0 +1,38 @@
+sudo: required
+
+services:
+  - docker
+
+language: bash
+
+env:
+  global:
+  - secure: "WUtIvPffx1SgPG/Waa8BZ1AOWrFq+IWmOsxDFHRwBQKWH6C069dO4zcS0EoaQhfeCy1KFxqw1M7Zx+apW14lcY+xllvUXSJuzclpdQPtkD2JioP8h+nzTlLeAaVMF+bJVxj55dQL8e5ppWJ9Y2NZSMOoL4oi21pfJjF7mc18Vq6wCJ8Xtgnt9tWjXgUXwR3GJq0oQiqLvWBgg9Q0XJ2zKO0OtilMsOy22GiAnU+JZL/tn4OOgU6Oy40I2kHlXXnbJv/hUM7bRvQAy4oXfrrnfFzYnJcOfI8mHxg/cdmVrpFmisT2LNitcuSeFgQI9zwv3joB9q3bGN+u2qgiEwjj5kjHQw5LvUqw0KsGP5V1SMotPe7PnAMBwzBeeFB4WfiklPKzGFkZTbUwA5qOAMkacS+Cq3er7RfjMGRl8fXXwjlrygT/ZwOlrpiaxpzvAmHNZ0UfNS76bBvpjdqSt1XhSUuSq1rQoxWPBIDchmSFulSec5YuTH42W48y7sCeuzdxlcE2BflJS7UHZNtMMfBl9kg5QriXmY4mNk1b1ETvZAEVue/v89ymRtO+DlvwMe/HYYWb+XZ+Q6PWfix4aEd6p6+4i58S/VBnFYBbsKtW3ARbkaKNG0gvAbxRQ2S5+ZxiQQd8yfEnt6hUhaqTpcSDl4YCYB5u4RGqYQcjjemxPLU="
+  - secure: "CWo43QpmeVYvD14oPOnOd3buF3LPh6g/bmeDhSE+91ElrnLL3PMl8ofwAbYRhtyWgr0LS4sOJFS0M0+sM52lYAP9I8wRhiYIxL1nThJ54mLzIlz1gPtdOkRRsx2Jkuavol58ChYuK98SuHKUfiHixtU9C+rCs15LeQSmvroOkscRlakfjzK39+rYqEqEI9EEqSFsJfmxW/DAqnsxyaKtXcoYO/RfprVd9TVVG/KG9D6zlQoCx1DCcNQeLBZ+HMFb7ulmyVoZ7Y3FNYSi3kr3czZgYF5K8RDRx9VTvkAXmj+oXWehgGlQ0kQwh6xSZG8uG6zvhnhrAtfcazR+EyBizz0KM3GihQzZs8VEG+jItSuH4wHgUvk6ZODdam/JMkROvJQvS+wXb2dSNCJYlZdc/Gikiu2nh9oQFSNC7eivw9Ll3sExVD/J0Lzm3Fc2djQvIODswfOU9APKXAgv+P4leBO/BSJr/g3FEU1PAeQktZ0y5FSI/zrwJVcgSqN+zTysdvh5GtYfuJ5+SEdCdb+a3odoPN1asYxS2T/+X9tWrIINYqkpoCgCnFB9Z2beCSi2i+SnqwmGE7+k86ddeD+xlNkPEAMSzroB7MWFdNpab6zRTRPeY/En+zqVn8T8DdclQ538qzLown6OMZ+XUzmTaDrZ/hK6FsxcK5F7zfcQKo0="
+
+before_install:
+  - echo "$DOCKER_PASS" | docker login -u "$DOCKER_LOGIN" --password-stdin
+
+jobs:
+  include:
+    - stage: Build Pia
+      env:
+        - JOB_NAME="Build Pia"
+      script:
+      # Build
+        - docker build -t "duffbeer2000/cnil-pia-back:latest" ./pia/docker/cnil-pia-back
+
+    - stage: Build Pia
+      env:
+        - JOB_NAME="Build Pia"
+      script:
+      # Build
+        - docker build -t "duffbeer2000/cnil-pia-back:latest" ./pia/docker/cnil-pia-front
+
+after_success:
+# Tag and push built images
+  - >
+    if [ "$TRAVIS_BRANCH" == "master" ] && [ "$TRAVIS_PULL_REQUEST" == "false" ] ; then
+      docker push duffbeer2000/cnil-pia-back:latest
+      docker push duffbeer2000/cnil-pia-front:latest
+    fi
