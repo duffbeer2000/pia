@@ -27,7 +27,7 @@ jobs:
         - JOB_NAME="Build Pia"
       script:
       # Build
-        - docker build -t "duffbeer2000/cnil-pia-back:latest" ./docker/cnil-pia-front
+        - docker build -t "duffbeer2000/cnil-pia-front:latest" ./docker/cnil-pia-front
 
 after_success:
 # Tag and push built images
